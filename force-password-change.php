@@ -67,9 +67,7 @@ $force_password_change = new force_password_change;
 
 
 
-class force_password_change {
-
-
+class Force_Password_Change {
 
 	// just a bunch of functions called from various hooks
 	function __construct() {
