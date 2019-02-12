@@ -150,16 +150,16 @@ if( !class_exists( 'Force_Password_Change' ) ){
 			$current_user = wp_get_current_user();
 			
 			if ( get_user_meta( $current_user->ID, 'force-password-change', true ) ) {
-				wp_redirect( admin_url( 'profile.php' ) );
-				exit; // never forget this after wp_redirect!
-			}
-	
-			if ( is_admin() ) {
-				$screen = get_current_screen();
-				if ( 'profile' == $screen->base )
-					return;
-				if ( 'plugins' == $screen->base )
-					return;
+				if( is_admin() ) {
+					$screen = get_current_screen();
+					if ( 'profile' == $screen->base )
+						return;
+					if ( 'plugins' == $screen->base )
+						return;
+				} else {
+					wp_redirect( admin_url( 'profile.php' ) );
+					exit; // never forget this after wp_redirect!
+				}
 			}
 		}
 	
