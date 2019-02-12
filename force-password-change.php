@@ -166,9 +166,7 @@ if( !class_exists( 'Force_Password_Change' ) ){
 		// if the user meta field is present, display an admin notice
 		public function notice() {
 	
-			global $current_user;
-	
-			wp_get_current_user();
+			$current_user = wp_get_current_user();
 	
 			if ( get_user_meta( $current_user->ID, 'force-password-change', true ) ) {
 				printf(
