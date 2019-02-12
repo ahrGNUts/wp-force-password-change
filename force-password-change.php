@@ -147,9 +147,7 @@ if( !class_exists( 'Force_Password_Change' ) ){
 			if ( ! is_user_logged_in() )
 				return;
 			
-			$current_user = wp_get_current_user();
-			
-			if ( get_user_meta( $current_user->ID, 'force-password-change', true ) ) {
+			if ( get_user_meta( get_current_user_id(), 'force-password-change', true ) ) {
 				if( is_admin() ) {
 					$screen = get_current_screen();
 					if ( 'profile' == $screen->base )
@@ -166,9 +164,7 @@ if( !class_exists( 'Force_Password_Change' ) ){
 		// if the user meta field is present, display an admin notice
 		public function notice() {
 	
-			$current_user = wp_get_current_user();
-	
-			if ( get_user_meta( $current_user->ID, 'force-password-change', true ) ) {
+			if ( get_user_meta( get_current_user_id(), 'force-password-change', true ) ) {
 				printf(
 					'<div class="error"><p>%s</p></div>',
 					__( 'Please change your password in order to continue using this website', 'force-password-change' )
