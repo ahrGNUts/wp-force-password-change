@@ -2,7 +2,7 @@
 /*
 Plugin Name:  Force Password Change
 Description:  Require users to change their password on first login.
-Version:      0.6
+Version:      0.7
 License:      GPL v2 or later
 Plugin URI:   https://github.com/lumpysimon/wp-force-password-change
 Author:       Simon Blackbourn
@@ -65,6 +65,9 @@ Domain Path:  /languages/
 defined( 'ABSPATH' ) || exit;
 
 if( !class_exists( 'Force_Password_Change' ) ){
+	register_activation_hook( __FILE__, array( 'Force_Password_Change', 'activate_plugin' ) );
+	register_uninstall_hook( __FILE__, array( 'Force_Password_Change', 'delete_plugin' ) );
+	
 	final class Force_Password_Change {
 	
 		private static $instance = null;
@@ -92,6 +95,26 @@ if( !class_exists( 'Force_Password_Change' ) ){
 			}
 	
 			return self::$instance;
+		}
+		
+		/**
+		 * Creates options that can be changed in the admin menu.
+		 */
+		public static function activate_plugin() {
+			add_option( '_enforce_admin_pw_change', 1 );
+			add_option( '_allow_weak_admin_pw', 0 );
+			add_option( '_allow_weak_user_pw', 1 );
+			add_option( '_custom_pw_redirect_link', '' );
+		}
+		
+		/**
+		 * Cleans up options created during plugin activation.
+		 */
+		public static function delete_plugin() {
+			delete_option( '_enforce_admin_pw_change' );
+			delete_option( '_allow_weak_admin_pw' );
+			delete_option( '_allow_weak_user_pw' );
+			delete_option( '_custom_pw_redirect_link' );
 		}
 	
 		// load localisation files
