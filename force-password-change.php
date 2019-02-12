@@ -143,8 +143,16 @@ if( !class_exists( 'Force_Password_Change' ) ){
 		// - we're on the front-end or any admin screen apart from the edit profile page or plugins page,
 		// then redirect to the edit profile page
 		public function redirect() {
-	
-			global $current_user;
+		
+			if ( ! is_user_logged_in() )
+				return;
+			
+			$current_user = wp_get_current_user();
+			
+			if ( get_user_meta( $current_user->ID, 'force-password-change', true ) ) {
+				wp_redirect( admin_url( 'profile.php' ) );
+				exit; // never forget this after wp_redirect!
+			}
 	
 			if ( is_admin() ) {
 				$screen = get_current_screen();
@@ -153,17 +161,6 @@ if( !class_exists( 'Force_Password_Change' ) ){
 				if ( 'plugins' == $screen->base )
 					return;
 			}
-	
-			if ( ! is_user_logged_in() )
-				return;
-	
-			wp_get_current_user();
-	
-			if ( get_user_meta( $current_user->ID, 'force-password-change', true ) ) {
-				wp_redirect( admin_url( 'profile.php' ) );
-				exit; // never forget this after wp_redirect!
-			}
-	
 		}
 	
 		// if the user meta field is present, display an admin notice
