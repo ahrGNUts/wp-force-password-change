@@ -60,6 +60,10 @@ Domain Path:  /languages/
 
 
 */
+
+// bail if accessed directly
+defined( 'ABSPATH' ) || exit;
+
 if( !class_exists( 'Force_Password_Change' ) ){
 	final class Force_Password_Change {
 	
