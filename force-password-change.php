@@ -60,126 +60,126 @@ Domain Path:  /languages/
 
 
 */
-
-
-
-$force_password_change = new force_password_change;
-
-
-
-class Force_Password_Change {
-
-	// just a bunch of functions called from various hooks
-	function __construct() {
-
-		add_action( 'init',                    array( $this, 'init' ) );
-		add_action( 'user_register',           array( $this, 'registered' ) );
-		add_action( 'personal_options_update', array( $this, 'updated' ) );
-		add_action( 'template_redirect',       array( $this, 'redirect' ) );
-		add_action( 'current_screen',          array( $this, 'redirect' ) );
-		add_action( 'admin_notices',           array( $this, 'notice' ) );
-
-	}
-
-
-
-	// load localisation files
-	function init() {
-
-		load_plugin_textdomain(
-			'force-password-change',
-			false,
-			dirname( plugin_basename( __FILE__ ) ) . '/languages'
-			);
-
-	}
-
-
-
-	// add a user meta field when a new user is registered
-	function registered( $user_id ) {
-
-		add_user_meta( $user_id, 'force-password-change', 1 );
-
-	}
-
-
-
-	// delete the user meta field when a user successfully changes their password
-	function updated( $user_id ) {
-
-		$pass1 = $pass2 = '';
-
-		if ( isset( $_POST['pass1'] ) )
-			$pass1 = $_POST['pass1'];
-
-		if ( isset( $_POST['pass2'] ) )
-			$pass2 = $_POST['pass2'];
-
-		if (
-			$pass1 != $pass2
-			or
-			empty( $pass1 )
-			or
-			empty( $pass2 )
-			or
-			false !== strpos( stripslashes( $pass1 ), "\\" )
-			)
-			return;
-
-		delete_user_meta( $user_id, 'force-password-change' );
-
-	}
-
-
-
-	// if:
-	// - we're logged in,
-	// - the user meta field is present,
-	// - we're on the front-end or any admin screen apart from the edit profile page or plugins page,
-	// then redirect to the edit profile page
-	function redirect() {
-
-		global $current_user;
-
-		if ( is_admin() ) {
-			$screen = get_current_screen();
-			if ( 'profile' == $screen->base )
-				return;
-			if ( 'plugins' == $screen->base )
-				return;
+if( !class_exists( 'Force_Password_Change' ) ){
+	final class Force_Password_Change {
+	
+		private static $instance = null;
+		
+		// just a bunch of functions called from various hooks
+		function __construct() {
+	
+			add_action( 'init',                    array( $this, 'init' ) );
+			add_action( 'user_register',           array( $this, 'registered' ) );
+			add_action( 'personal_options_update', array( $this, 'updated' ) );
+			add_action( 'template_redirect',       array( $this, 'redirect' ) );
+			add_action( 'current_screen',          array( $this, 'redirect' ) );
+			add_action( 'admin_notices',           array( $this, 'notice' ) );
+	
 		}
-
-		if ( ! is_user_logged_in() )
-			return;
-
-		wp_get_current_user();
-
-		if ( get_user_meta( $current_user->ID, 'force-password-change', true ) ) {
-			wp_redirect( admin_url( 'profile.php' ) );
-			exit; // never forget this after wp_redirect!
+		
+		/**
+		 * Return class instance.
+		 *
+		 * @return static Instance of class.
+		 */
+		public static function instance() {
+			if ( ! isset( self::$instance ) ) {
+				self::$instance = new self;
+			}
+	
+			return self::$instance;
 		}
-
-	}
-
-
-
-	// if the user meta field is present, display an admin notice
-	function notice() {
-
-		global $current_user;
-
-		wp_get_current_user();
-
-		if ( get_user_meta( $current_user->ID, 'force-password-change', true ) ) {
-			printf(
-				'<div class="error"><p>%s</p></div>',
-				__( 'Please change your password in order to continue using this website', 'force-password-change' )
+	
+		// load localisation files
+		public function init() {
+	
+			load_plugin_textdomain(
+				'force-password-change',
+				false,
+				dirname( plugin_basename( __FILE__ ) ) . '/languages'
 				);
+	
 		}
+	
+		// add a user meta field when a new user is registered
+		public function registered( $user_id ) {
+	
+			add_user_meta( $user_id, 'force-password-change', 1 );
+		}
+	
+		// delete the user meta field when a user successfully changes their password
+		public function updated( $user_id ) {
+	
+			$pass1 = $pass2 = '';
+	
+			if ( isset( $_POST['pass1'] ) )
+				$pass1 = $_POST['pass1'];
+	
+			if ( isset( $_POST['pass2'] ) )
+				$pass2 = $_POST['pass2'];
+	
+			if (
+				$pass1 != $pass2
+				or
+				empty( $pass1 )
+				or
+				empty( $pass2 )
+				or
+				false !== strpos( stripslashes( $pass1 ), "\\" )
+				)
+				return;
+	
+			delete_user_meta( $user_id, 'force-password-change' );
+	
+		}
+	
+		// if:
+		// - we're logged in,
+		// - the user meta field is present,
+		// - we're on the front-end or any admin screen apart from the edit profile page or plugins page,
+		// then redirect to the edit profile page
+		public function redirect() {
+	
+			global $current_user;
+	
+			if ( is_admin() ) {
+				$screen = get_current_screen();
+				if ( 'profile' == $screen->base )
+					return;
+				if ( 'plugins' == $screen->base )
+					return;
+			}
+	
+			if ( ! is_user_logged_in() )
+				return;
+	
+			wp_get_current_user();
+	
+			if ( get_user_meta( $current_user->ID, 'force-password-change', true ) ) {
+				wp_redirect( admin_url( 'profile.php' ) );
+				exit; // never forget this after wp_redirect!
+			}
+	
+		}
+	
+		// if the user meta field is present, display an admin notice
+		public function notice() {
+	
+			global $current_user;
+	
+			wp_get_current_user();
+	
+			if ( get_user_meta( $current_user->ID, 'force-password-change', true ) ) {
+				printf(
+					'<div class="error"><p>%s</p></div>',
+					__( 'Please change your password in order to continue using this website', 'force-password-change' )
+					);
+			}
+	
+		}
+	} // class
+	
+	Force_Password_Change::instance();
+}
 
-	}
 
-
-
-} // class
