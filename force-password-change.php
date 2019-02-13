@@ -212,12 +212,12 @@ if( !class_exists( 'Force_Password_Change' ) ){
 			require( 'views/fpc-admin-settings.php' );
 		}
 		
-		private function set_option_status( $option ){
-			return empty( get_option( $option ) ) ? '' : 'checked';
+		private function set_checked_status( $option ){
+			return empty( $option ) ? '' : 'checked';
 		}
 		
 		private function set_element_visibility( $option ) {
-			return empty( get_option( $option ) ) ? 'style="display:none;"' : '';
+			return empty( $option ) ? 'style="display:none;"' : '';
 		}
 		
 		public function enqueue_scripts( $hook ) {

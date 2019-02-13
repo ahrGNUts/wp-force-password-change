@@ -20,7 +20,7 @@ if( is_admin() && current_user_can( 'administrator' ) ): ?>
 				</th>
 				
 				<td>
-					<input type="checkbox" name="enforce_admin_pw_change" id="enforce_admin_pw_change" <?php echo self::set_option_status( '_enforce_admin_pw_change' ); ?>>
+					<input type="checkbox" name="enforce_admin_pw_change" id="enforce_admin_pw_change" <?php echo self::set_checked_status( get_option( '_enforce_admin_pw_change' ) ); ?>>
 					<p class="description">Enforce password changes for new admin users (Default: enabled)</p>
 				</td>
 			</tr>
@@ -31,7 +31,7 @@ if( is_admin() && current_user_can( 'administrator' ) ): ?>
 				</th>
 				
 				<td>
-					<input type="checkbox" name="allow_weak_admin_pw" <?php echo self::set_option_status( '_allow_weak_admin_pw' ); ?>>
+					<input type="checkbox" name="allow_weak_admin_pw" <?php echo self::set_checked_status( get_option( '_allow_weak_admin_pw' ) ); ?>>
 					<p class="description">Allow admin users to set weak passwords. If this is unchecked and Wordpress detects a weak password during a password update, the weak password will not be set and the admin user will be prompted to set a stronger password. (Default: disabled)</p>
 				</td>
 			</tr>
@@ -40,7 +40,7 @@ if( is_admin() && current_user_can( 'administrator' ) ): ?>
 					<label for="allow_weak_user_pw"><strong>Allow Weak User Passwords</strong></label>
 				</th>
 				<td>
-					<input type="checkbox" name="allow_weak_user_pw" <?php echo self::set_option_status( '_allow_weak_user_pw' ); ?>>
+					<input type="checkbox" name="allow_weak_user_pw" <?php echo self::set_checked_status( get_option( '_allow_weak_user_pw' ) ); ?>>
 					<p class="description">Allow non-admin users to set weak passwords. If this is unchecked and Wordpress detects a weak password during a password update, the weak password will not be set and the user will be prompted to set a stronger password. (Default: enabled)</p>
 				</td>
 			</tr>
@@ -69,7 +69,7 @@ if( is_admin() && current_user_can( 'administrator' ) ): ?>
 					<p class="description">If your users can change their password on a page other than the backend profile management page, you can set it here. Select 'N/A' to use the standard wp-admin page.</p>
 				</td>
 			</tr>
-			<tr id="redirect_url_row" <?php echo self::set_element_visibility( '_custom_pw_redirect_link' ); ?>>
+			<tr id="redirect_url_row" <?php echo self::set_element_visibility( get_option( '_custom_pw_redirect_link' ) ); ?>>
 				<th>
 					<label for="custom_url_redirect">Custom Redirect URL</label>
 				</th>
