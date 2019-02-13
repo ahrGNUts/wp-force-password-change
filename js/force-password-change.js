@@ -12,5 +12,11 @@ jQuery(function($){
 		}
 	});
 	
-	
+	$('#custom_pw_redirect_picker').on('change', function() {
+		if($(this).val() == "custom"){
+			$('#redirect_url_row').show();
+		} else {
+			$('#redirect_url_row').hide();
+		}
+	});
 });

@@ -212,7 +212,7 @@ if( !class_exists( 'Force_Password_Change' ) ){
 			if( is_admin() && current_user_can( 'administrator' ) ){ 
 			?>
 			<div class="wrap">
-				<h2>Force Password Change Options</h2>
+				<h2>Force Password Change Settings</h2>
 				<form method="post" action="<?php echo esc_html( admin_url( 'admin-post.php' ) ); ?>">
 					<?php wp_nonce_field( 'process_fpc_options', '_fpc_options_nonce' ); ?>
 					<table class="form-table">
@@ -249,11 +249,11 @@ if( !class_exists( 'Force_Password_Change' ) ){
 						<tr>
 							<?php //add_option( '_custom_pw_redirect_link', '' ); ?>
 							<th>
-								<label for="custom_pw_redirect_page">Custom Redirect Page</label>
+								<label for="custom_pw_redirect_picker">Custom Redirect Page</label>
 							</th>
 							<td>
-								<select name="custom_pw_redirect_page" id="custom_pw_redirect_page">
-									<option value="" disabled>-- Select a page --</option>
+								<select name="custom_pw_redirect_picker" id="custom_pw_redirect_picker">
+									<option value="">N/A</option>
 									<option value="custom">Custom URL</option>
 									<?php
 										$pages = get_posts(
@@ -269,16 +269,16 @@ if( !class_exists( 'Force_Password_Change' ) ){
 										}
 									?>
 								</select>
-								<p class="description">If your users can change their password on a page other than the backend profile management page, you can set it here.</p>
+								<p class="description">If your users can change their password on a page other than the backend profile management page, you can set it here. Select 'N/A' to use the standard wp-admin page.</p>
 							</td>
 						</tr>
-						<tr id="redirect_url_row">
+						<tr id="redirect_url_row" <?php echo self::set_element_visibility( '_custom_pw_redirect_link' ); ?>>
 							<th>
 								<label for="custom_url_redirect">Custom Redirect URL</label>
 							</th>
 							<td>
 								<input type="text" name="custom_url_redirect" id="custom_url_redirect">
-								<p class="description">If you need to set a custom URL for the redirect, you can use this field.</p>
+								<p class="description">If you are using a custom URL for the redirect, please enter it here.</p>
 							</td>
 						</tr>
 					</table>
@@ -301,8 +301,11 @@ if( !class_exists( 'Force_Password_Change' ) ){
 		}
 		
 		public function enqueue_scripts( $hook ) {
-			if( $hook == "toplevel_page_force-password-change" && is_admin() && current_user_can( 'administrator' ) )
+			if( $hook == "toplevel_page_force-password-change" && is_admin() && current_user_can( 'administrator' ) ){
 				wp_enqueue_script( 'fpc_admin_menu', plugin_dir_url( __FILE__ ) . 'js/force-password-change.js', array( 'jquery' ) );
+				wp_enqueue_style( 'fpc_admin_styles', plugin_dir_url( __FILE__ ) . 'css/force-password-change.css' );
+			}
+				
 		}
 	} // class
 	
