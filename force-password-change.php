@@ -75,14 +75,16 @@ if( !class_exists( 'Force_Password_Change' ) ){
 		// just a bunch of functions called from various hooks
 		function __construct() {
 	
-			add_action( 'init',                    array( $this, 'init' ) );
-			add_action( 'user_register',           array( $this, 'registered' ) );
-			add_action( 'personal_options_update', array( $this, 'updated' ) );
-			add_action( 'template_redirect',       array( $this, 'redirect' ) );
-			add_action( 'current_screen',          array( $this, 'redirect' ) );
-			add_action( 'admin_notices',           array( $this, 'notice' ) );
-			add_action( 'admin_menu', 			   array( $this, 'menu_item' ) );
-			add_action( 'admin_enqueue_scripts',   array( $this, 'enqueue_scripts' ) );
+			add_action( 'init',                     array( $this, 'init' ) );
+			add_action( 'user_register',            array( $this, 'registered' ) );
+			add_action( 'personal_options_update',  array( $this, 'updated' ) );
+			add_action( 'template_redirect',        array( $this, 'redirect' ) );
+			add_action( 'current_screen',           array( $this, 'redirect' ) );
+			add_action( 'admin_notices',            array( $this, 'notice' ) );
+			add_action( 'admin_menu', 			    array( $this, 'menu_item' ) );
+			add_action( 'admin_enqueue_scripts',    array( $this, 'enqueue_scripts' ) );
+			add_action( 'edit_user_profile', 	    array( $this, 'show_change_password_cb' ) );
+			add_action( 'edit_user_profile_update', array( $this, 'process_password_cb' ) );
 		}
 		
 		/**
@@ -225,7 +227,35 @@ if( !class_exists( 'Force_Password_Change' ) ){
 				wp_enqueue_script( 'fpc_admin_menu', plugin_dir_url( __FILE__ ) . 'assets/js/force-password-change.js', array( 'jquery' ) );
 				wp_enqueue_style( 'fpc_admin_styles', plugin_dir_url( __FILE__ ) . 'assets/css/force-password-change.css' );
 			}
-				
+	
+		}
+		
+		/**
+		 *	Show markup for a checkbox displayed on the edit user page that will force the user to change their passsword when checked.
+		 *	Checkbox will only be visible to admin users
+		 *	
+		 *	@since 0.8
+		 *  @author Patrick Strube
+		 */
+		public function show_change_password_cb( $user ) {
+			include( 'views/fpc-change-password-cb.php' );
+		}
+		
+		/**
+		 *	Process immediate password change option on user's profile edit page
+		 *  
+		 *  @since 0.8
+		 *	@author Patrick Strube
+		 */ 
+		public function process_password_cb( $user_id ){ 
+			if( !current_user_can( 'administrator' ) )
+				return false;
+			
+			if( isset( $_POST['change_pw_cb'] ) ){
+				update_user_meta( $user_id, 'force-password-change', 1 );
+			} else {
+				delete_user_meta( $user_id, 'force-password-change' );
+			}
 		}
 	} // class
 	
