@@ -199,7 +199,7 @@ if( !class_exists( 'Force_Password_Change' ) ){
 		
 		public function menu_item(){
 			add_menu_page(
-				__( 'Force Password Change', 'force-password-change' ),
+				__( 'Force Password Change Settings', 'force-password-change' ),
 				'Force Password Change',
 				'manage_options',
 				'force-password-change',
