@@ -209,12 +209,12 @@ if( !class_exists( 'Force_Password_Change' ) ){
 				'Force Password Change',
 				'manage_options',
 				'force-password-change',
-				array( $this, 'admin_menu_markup' ),
+				array( $this, 'admin_menu_page_content' ),
 				'dashicons-admin-settings'
 			);
 		}
 			
-		public function admin_menu_markup() {
+		public function admin_menu_page_content() {
 			require( 'views/fpc-admin-settings.php' );
 		}
 		
