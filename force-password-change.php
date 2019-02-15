@@ -86,6 +86,7 @@ if( !class_exists( 'Force_Password_Change' ) ){
 			add_action( 'edit_user_profile', 	    	  	array( $this, 'show_change_password_cb' ) );
 			add_action( 'edit_user_profile_update', 	  	array( $this, 'process_password_cb' ) );
 			add_action( 'admin_post_process_fpc_options',	array( $this, 'process_fpc_options' ) );
+			add_action( 'user_profile_update_errors',		array( $this, 'validate_password' ), 10, 3 );
 		}
 		
 		/**
@@ -317,6 +318,16 @@ if( !class_exists( 'Force_Password_Change' ) ){
 			
 			wp_safe_redirect( $_SERVER['HTTP_REFERER'] );
 			exit;
+		}
+		
+		public function validate_password( &$errors, $update, $user ) {
+			// if admin and weak admin passwords not allowed
+			if( current_user_can( 'administrator' ) && get_option( '_allow_weak_admin_pw' ) == 0 && isset( $_POST['pw_weak'] ) )
+				$errors->add( 'admin_pw_error', __( 'Weak password detected! Please choose a stronger password and try again.', 'force-password-change' ) );
+			
+			// if not admin and weak user passwords not allowed
+			if( !current_user_can( 'administrator' ) && is_user_logged_in() && get_option( '_allow_weak_user_pw' ) == 0 && isset( $_POST['pw_weak'] ) )
+				$errors->add( 'user_pw_error', __( 'Weak password detected! Please choose a stronger password and try again.', 'force-password-change' ) );
 		}
 	} // class
 	
