@@ -270,7 +270,10 @@ if( !class_exists( 'Force_Password_Change' ) ){
 		 */
 		public function process_fpc_options() {
 			if( !wp_verify_nonce( $_POST['_fpc_options_nonce'], 'process_fpc_options' ) || !current_user_can( 'administrator' ) ){
-				wp_die( __( 'Invalid nonce.', 'force-password-change' ), __( 'Error', 'force-password-change' ), array(
+				wp_die( 
+					__( 'Invalid nonce.', 'force-password-change' ), 
+					__( 'Error', 'force-password-change' ), 
+					array(
 						'response' => 403,
 						'back_link' => 'admin.php?page=force-password-change'
 					)
