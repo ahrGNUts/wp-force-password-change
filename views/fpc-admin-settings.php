@@ -24,8 +24,7 @@ if( is_admin() && current_user_can( 'administrator' ) ): ?>
 					<p class="description">Enforce password changes for new admin users (Default: enabled)</p>
 				</td>
 			</tr>
-			<?php // TODO: make this dynamically appear/disappear ?>
-			<tr id="admin_pw_row" <?php echo self::set_element_visibility( '_enforce_admin_pw_change' ); ?>>
+			<tr id="admin_pw_row" <?php echo self::set_element_visibility( get_option( '_enforce_admin_pw_change' ) ); ?>>
 				<th>
 					<label for="allow_weak_admin_pw"><strong>Allow Weak Admin Passwords</strong></label>
 				</th>
