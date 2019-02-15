@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) || exit;
 
 if( is_admin() && current_user_can( 'administrator' ) ){
 	$pw_change_required = get_user_meta( $user->ID, 'force-password-change', true ); 
-	var_dump( $pw_change_required );
 ?>
 
 <h3>Force Password Change</h3>
