@@ -51,8 +51,12 @@ if( is_admin() && current_user_can( 'administrator' ) ): ?>
 				<td>
 					<select name="custom_pw_redirect_picker" id="custom_pw_redirect_picker">
 						<option value="">N/A</option>
-						<option value="custom">Custom URL</option>
 						<?php
+							$page_id = get_option( '_custom_redirect_page_id' );
+							$selected = $page_id == "custom" ? 'selected' : '';
+							
+							echo '<option value="custom" ' . $selected . '>Custom URL</option>';
+							
 							$pages = get_posts(
 								array(
 									'post_type' => 'page',
@@ -62,7 +66,10 @@ if( is_admin() && current_user_can( 'administrator' ) ): ?>
 							);
 							
 							foreach( $pages as $page ) {
-								echo '<option value="' . $page->ID . '">' . $page->post_title . '</option>'; 
+								if( $page_id == $page->ID )
+									echo '<option value="' . $page->ID . '" selected>' . $page->post_title . '</option>'; 
+								else
+									echo '<option value="' . $page->ID . '">' . $page->post_title . '</option>';
 							}
 						?>
 					</select>
@@ -74,7 +81,7 @@ if( is_admin() && current_user_can( 'administrator' ) ): ?>
 					<label for="custom_url_redirect">Custom Redirect URL</label>
 				</th>
 				<td>
-					<input type="text" name="custom_url_redirect" id="custom_url_redirect">
+					<input type="text" name="custom_url_redirect" id="custom_url_redirect" value="<?php echo get_option( '_custom_pw_redirect_link' );?>">
 					<p class="description">If you are using a custom URL for the redirect, please enter it here.</p>
 				</td>
 			</tr>

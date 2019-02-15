@@ -75,16 +75,17 @@ if( !class_exists( 'Force_Password_Change' ) ){
 		// just a bunch of functions called from various hooks
 		function __construct() {
 	
-			add_action( 'init',                     array( $this, 'init' ) );
-			add_action( 'user_register',            array( $this, 'registered' ) );
-			add_action( 'personal_options_update',  array( $this, 'updated' ) );
-			add_action( 'template_redirect',        array( $this, 'redirect' ) );
-			add_action( 'current_screen',           array( $this, 'redirect' ) );
-			add_action( 'admin_notices',            array( $this, 'notice' ) );
-			add_action( 'admin_menu', 			    array( $this, 'menu_item' ) );
-			add_action( 'admin_enqueue_scripts',    array( $this, 'enqueue_scripts' ) );
-			add_action( 'edit_user_profile', 	    array( $this, 'show_change_password_cb' ) );
-			add_action( 'edit_user_profile_update', array( $this, 'process_password_cb' ) );
+			add_action( 'init',                     	  	array( $this, 'init' ) );
+			add_action( 'user_register',            	  	array( $this, 'registered' ) );
+			add_action( 'personal_options_update',  	  	array( $this, 'updated' ) );
+			add_action( 'template_redirect',        		array( $this, 'redirect' ) );
+			add_action( 'current_screen',           		array( $this, 'redirect' ) );
+			add_action( 'admin_notices',            		array( $this, 'notice' ) );
+			add_action( 'admin_menu', 			    		array( $this, 'menu_item' ) );
+			add_action( 'admin_enqueue_scripts',    		array( $this, 'enqueue_scripts' ) );
+			add_action( 'edit_user_profile', 	    	  	array( $this, 'show_change_password_cb' ) );
+			add_action( 'edit_user_profile_update', 	  	array( $this, 'process_password_cb' ) );
+			add_action( 'admin_post_process_fpc_options',	array( $this, 'process_fpc_options' ) );
 		}
 		
 		/**
@@ -107,6 +108,7 @@ if( !class_exists( 'Force_Password_Change' ) ){
 			add_option( '_enforce_admin_pw_change', 1 );
 			add_option( '_allow_weak_admin_pw', 0 );
 			add_option( '_allow_weak_user_pw', 1 );
+			add_option( '_custom_redirect_page_id', 0 );
 			add_option( '_custom_pw_redirect_link', '' );
 		}
 		
@@ -117,6 +119,7 @@ if( !class_exists( 'Force_Password_Change' ) ){
 			delete_option( '_enforce_admin_pw_change' );
 			delete_option( '_allow_weak_admin_pw' );
 			delete_option( '_allow_weak_user_pw' );
+			delete_option( '_custom_redirect_page_id' );
 			delete_option( '_custom_pw_redirect_link' );
 		}
 	
@@ -256,6 +259,64 @@ if( !class_exists( 'Force_Password_Change' ) ){
 			} else {
 				delete_user_meta( $user_id, 'force-password-change' );
 			}
+		}
+		
+		/**
+		 *	Process settings update on main FPC settings page
+		 *	
+		 *	@since 0.8
+		 *	@author Patrick Strube
+		 */
+		public function process_fpc_options() {
+			if( !wp_verify_nonce( $_POST['_fpc_options_nonce'], 'process_fpc_options' ) || !current_user_can( 'administrator' ) ){
+				wp_die( __( 'Invalid nonce.', 'force-password-change' ), __( 'Error', 'force-password-change' ), array(
+						'response' => 403,
+						'back_link' => 'admin.php?page=force-password-change'
+					)
+				);
+			}
+				
+			// Admin pw
+			if( isset( $_POST['enforce_admin_pw_change'] ) ){
+				update_option( '_enforce_admin_pw_change', 1 );
+				
+				if( isset( $_POST['allow_weak_admin_pw'] ) ){
+					update_option( '_allow_weak_admin_pw', 1 );
+				} else {
+					update_option( '_allow_weak_admin_pw', 0 );
+				}
+			} else {
+				update_option( '_enforce_admin_pw_change', 0 );
+			}
+			
+			// user pw
+			if( isset( $_POST['allow_weak_user_pw'] ) ){
+				update_option( '_allow_weak_user_pw', 1 );
+			} else {
+				update_option( '_allow_weak_user_pw', 0 );
+			}
+			
+			// custom redirect
+			if( isset( $_POST['custom_pw_redirect_picker'] ) && !empty( $_POST['custom_pw_redirect_picker'] ) ){
+				$picker_value = $_POST['custom_pw_redirect_picker'];
+				
+				update_option( '_custom_redirect_page_id', $picker_value );
+				if( $picker_value == "custom" ){
+					$url = sanitize_text_field( $_POST['custom_url_redirect'] );
+					
+					update_option( '_custom_pw_redirect_link', $url );
+				} else {
+					$url = get_permalink( $picker_value );
+					
+					update_option( '_custom_pw_redirect_link', $url );
+				}
+			} else {
+				update_option( '_custom_redirect_page_id', 0 );
+				update_option( '_custom_pw_redirect_link', '' );
+			}
+			
+			wp_safe_redirect( $_SERVER['HTTP_REFERER'] );
+			exit;
 		}
 	} // class
 	
