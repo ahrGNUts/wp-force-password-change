@@ -324,13 +324,21 @@ if( !class_exists( 'Force_Password_Change' ) ){
 		}
 		
 		public function validate_password( &$errors, $update, $user ) {
-			// if admin and weak admin passwords not allowed
-			if( current_user_can( 'administrator' ) && get_option( '_allow_weak_admin_pw' ) == 0 && isset( $_POST['pw_weak'] ) )
-				$errors->add( 'admin_pw_error', __( 'Weak password detected! Please choose a stronger password and try again.', 'force-password-change' ) );
 			
-			// if not admin and weak user passwords not allowed
-			if( !current_user_can( 'administrator' ) && is_user_logged_in() && get_option( '_allow_weak_user_pw' ) == 0 && isset( $_POST['pw_weak'] ) )
-				$errors->add( 'user_pw_error', __( 'Weak password detected! Please choose a stronger password and try again.', 'force-password-change' ) );
+			if( $update ){
+				if( isset( $user->role ) )
+					$is_administrator = $user->role == 'administrator';
+				else if( isset( $user->roles ) )
+					$is_administrator = in_array( 'administrator', $user->roles );
+				
+				if( $is_administrator && ( get_option( '_enforce_admin_pw_change' ) && get_option( '_allow_weak_admin_pw' ) == 0 ) && isset( $_POST['pw_weak'] ) ){
+					// if admin and weak admin passwords not allowed
+					$errors->add( 'admin_pw_error', __( 'Weak administrator passwords are not allowed. Please choose a stronger password and try again.', 'force-password-change' ) );
+				} else if( !$is_administrator && is_user_logged_in() && get_option( '_allow_weak_user_pw' ) == 0 && isset( $_POST['pw_weak'] ) ){
+					// if not admin and weak user passwords not allowed
+					$errors->add( 'user_pw_error', __( 'Weak password detected! Please choose a stronger password and try again.', 'force-password-change' ) );
+				}
+			}
 		}
 	} // class
 	
