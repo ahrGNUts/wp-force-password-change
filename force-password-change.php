@@ -235,6 +235,8 @@ if( !class_exists( 'Force_Password_Change' ) ){
 			if( $hook == "toplevel_page_force-password-change" && is_admin() && current_user_can( 'administrator' ) ){
 				wp_enqueue_script( 'fpc_admin_menu', plugin_dir_url( __FILE__ ) . 'assets/js/force-password-change.js', array( 'jquery' ) );
 				wp_enqueue_style( 'fpc_admin_styles', plugin_dir_url( __FILE__ ) . 'assets/css/force-password-change.css' );
+			} else if( is_admin() && $hook == "profile.php" ){
+				wp_enqueue_script( 'fpc_badpw_cb', plugin_dir_url( __FILE__ ) . 'assets/js/badpw_cb.js', array( 'jquery' ) );
 			}
 	
 		}
