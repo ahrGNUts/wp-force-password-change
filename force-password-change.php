@@ -137,8 +137,10 @@ if( !class_exists( 'Force_Password_Change' ) ){
 	
 		// add a user meta field when a new user is registered
 		public function registered( $user_id ) {
-	
-			add_user_meta( $user_id, 'force-password-change', 1 );
+			$user_meta = get_userdata( $user_id );
+
+			if( ( get_option( '_enforce_admin_pw_change' ) && in_array( 'administrator', $user_meta->roles ) ) || !in_array( 'administrator', $user_meta->roles ) )
+				add_user_meta( $user_id, 'force-password-change', 1 );
 		}
 	
 		// delete the user meta field when a user successfully changes their password
