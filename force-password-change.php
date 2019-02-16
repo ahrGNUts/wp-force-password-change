@@ -162,11 +162,14 @@ if( !class_exists( 'Force_Password_Change' ) ){
 				empty( $pass2 )
 				or
 				false !== strpos( stripslashes( $pass1 ), "\\" )
+				or 
+				isset( $_POST['pw_weak'] ) && !get_option( '_allow_weak_user_pw' ) && !current_user_can( 'administrator' ) 
+				or
+				isset( $_POST['pw_weak'] ) && get_option( '_enforce_admin_pw_change' ) && !get_option( '_allow_weak_admin_pw' ) && current_user_can( 'administrator' )
 				)
 				return;
 	
 			delete_user_meta( $user_id, 'force-password-change' );
-	
 		}
 	
 		// if:
